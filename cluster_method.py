@@ -6,14 +6,14 @@ from sklearn import cluster
 def get_blobs(img):
    params = cv2.SimpleBlobDetector_Params()
 
-   # params.filterByColor = True
-   # params.blobColor = 0
-
-   params.filterByInertia = True
-   params.minInertiaRatio = 0.6
-
    params.filterByArea = True
    params.maxArea = 500
+
+   params.filterByCircularity = True
+   params.minCircularity = 0.8
+
+   params.filterByInertia = True
+   params.minInertiaRatio = 0.8
 
    detector = cv2.SimpleBlobDetector_create(params)
 
@@ -30,6 +30,8 @@ def get_ground_truth(path):
 
 if __name__ == "__main__":
    IMG_DIR = Path('images')
+   RESULTS_DIR = Path('results')
+   RESULTS_DIR.mkdir(exist_ok=True)
 
    total = 0
    correct = 0
@@ -45,8 +47,16 @@ if __name__ == "__main__":
       
       output = cv2.drawKeypoints(img, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
+      # result_path = RESULTS_DIR / path.name
+      # cv2.imwrite(str(result_path), output)
+
       cv2.imshow(ground_truth, output)
       cv2.waitKey(0)
       cv2.destroyAllWindows()
 
    print(f"Accuracy: {correct}/{total} = {correct/total:.2%}")
+
+   # default 17/26 = 65.38%
+   # maxarea 17/26 = 65.38%
+   # maxarea + mincircularity 22/26 = 84.62%
+   # maxarea + mincircularity + mininertiaratio 26/26 = 100.00%
