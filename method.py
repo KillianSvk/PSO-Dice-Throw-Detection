@@ -25,7 +25,7 @@ def main():
         img, value = load_image(path)
         
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        blur_img = cv2.GaussianBlur(gray_img, (5, 5), 0)
+        blur_img = cv2.GaussianBlur(gray_img, (7, 7), 0)
         
         thresh_img = cv2.adaptiveThreshold(
             blur_img,
@@ -44,12 +44,12 @@ def main():
             iterations=1
         )
 
-        kernel = np.ones((17, 17), np.uint8)
+        kernel = np.ones((5, 5), np.uint8)
         thresh_img = cv2.morphologyEx(
             thresh_img, 
-            cv2.MORPH_CLOSE, 
+            cv2.MORPH_DILATE, 
             kernel, 
-            iterations=1
+            iterations=2
         )
 
         contours, hierarchy = cv2.findContours(
@@ -124,12 +124,11 @@ def main():
 
             print(f"Detected {dots_count} / {value}")
 
-        
         if dots_count == value:
             count += 1
 
-        # fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-        # axes = axes.flatten()
+        fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+        axes = axes.flatten()
         
         images = [
             (img[:,:,::-1], "Original"),
@@ -140,20 +139,20 @@ def main():
             (dots_final[:, :, ::-1], "Final")
         ]
         
-        # for i, (image, title) in enumerate(images):
-        #     ax = axes[i]
+        for i, (image, title) in enumerate(images):
+            ax = axes[i]
             
-        #     if image.ndim == 2:
-        #         ax.imshow(image, cmap='gray') 
-        #     else:
-        #         ax.imshow(image)
+            if image.ndim == 2:
+                ax.imshow(image, cmap='gray') 
+            else:
+                ax.imshow(image)
                 
-        #     ax.set_title(title, fontsize=12)
-        #     ax.axis('off')
+            ax.set_title(title, fontsize=12)
+            ax.axis('off')
             
-        # plt.tight_layout()
+        plt.tight_layout()
 
-        # plt.show(block=True) 
+        plt.show(block=True) 
 
 
     print(f"{count}/{all_count}")
