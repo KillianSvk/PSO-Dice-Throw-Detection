@@ -70,7 +70,7 @@ def main():
         
         if dice_contour is not None:
             contour_img = img.copy()
-            cv2.drawContours(contour_img, [dice_contour], -1, (0, 255, 0), 5) 
+            cv2.drawContours(contour_img, [dice_contour], -1, (0, 255, 0), 2) 
             
             mask = np.zeros(blur_img.shape, dtype=np.uint8)
             cv2.drawContours(mask, [dice_contour], -1, 255, cv2.FILLED) 
