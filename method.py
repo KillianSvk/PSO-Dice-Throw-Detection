@@ -23,10 +23,17 @@ def main():
 
     for path in IMG_DIR.glob('*.png'):
         img, value = load_image(path)
+
+        # cv2.imshow('1', img)
         
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # cv2.imshow('2', gray_img)
+
         blur_img = cv2.GaussianBlur(gray_img, (7, 7), 0)
-        
+
+        # cv2.imshow('3', blur_img)
+
         thresh_img = cv2.adaptiveThreshold(
             blur_img,
             255, 
@@ -44,6 +51,8 @@ def main():
             iterations=1
         )
 
+        # cv2.imshow('5', thresh_img)
+
         kernel = np.ones((5, 5), np.uint8)
         thresh_img = cv2.morphologyEx(
             thresh_img, 
@@ -51,6 +60,8 @@ def main():
             kernel, 
             iterations=2
         )
+
+        # cv2.imshow('6', thresh_img)
 
         contours, hierarchy = cv2.findContours(
             thresh_img.copy(), 
@@ -70,7 +81,9 @@ def main():
         
         if dice_contour is not None:
             contour_img = img.copy()
-            cv2.drawContours(contour_img, [dice_contour], -1, (0, 255, 0), 2) 
+            cv2.drawContours(contour_img, [dice_contour], -1, (0, 255, 0), 2)
+
+            # cv2.imshow('7', contour_img)
             
             mask = np.zeros(blur_img.shape, dtype=np.uint8)
             cv2.drawContours(mask, [dice_contour], -1, 255, cv2.FILLED) 
@@ -93,6 +106,8 @@ def main():
                 kernel, 
                 iterations=1
             )
+
+            # cv2.imshow('8', isolated_dice_binary)
            
             contours, hierarchy = cv2.findContours(
                 isolated_dice_binary,
@@ -120,8 +135,11 @@ def main():
                     continue
 
                 dots_count += 1
-                cv2.drawContours(dots_final, [contour], -1, (0, 255, 0), 1)
+                cv2.drawContours(dots_final, [contour], -1, (0, 255, 0), 2)
 
+            # cv2.imshow('9', dots_final)
+            # cv2.waitKey(0)
+            
             print(f"Detected {dots_count} / {value}")
 
         if dots_count == value:
@@ -131,12 +149,12 @@ def main():
         axes = axes.flatten()
         
         images = [
-            (img[:,:,::-1], "Original"),
-            (gray_img, "1. Grayscale"),
-            (blur_img, "2. Gaussian Blur"),
-            (thresh_img, "3. Binary + Opening"),
-            (contour_img, "4. Contour Found"),
-            (dots_final[:, :, ::-1], "Final")
+            (img[:,:,::-1], "original"),
+            (gray_img, "grayscale"),
+            (blur_img, "gaussian blur"),
+            (thresh_img, "binary"),
+            (contour_img, "contour found"),
+            (dots_final[:, :, ::-1], "final")
         ]
         
         for i, (image, title) in enumerate(images):
